@@ -3,11 +3,12 @@ import './styles/theme.css';
 // 2º: Importamos os estilos globais
 import './styles/global.css';
 
+import { Heading } from './components/Heading';
+
 export function App() {
   return (
     <>
-      <h1>Olá, Mundo!</h1>
-      <p>Testando o CSS Global.</p>
+      <Heading />
     </>
   );
 }
