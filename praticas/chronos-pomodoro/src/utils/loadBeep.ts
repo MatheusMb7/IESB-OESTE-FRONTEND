@@ -1,4 +1,4 @@
-import gravitationalBeep from '../assets/audios/gravitational_beep.mp3';
+import gravitationalBeep from '../assets/audios/soundreality-gravity-143958.mp3';
 
 /**
  * Prepares a short notification sound for playback in the browser.
