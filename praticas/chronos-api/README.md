@@ -1,166 +1,106 @@
-# Chronos API
+Chronos API
+Backend do projeto Chronos Pomodoro, construído com Node.js, Express, Prisma e MySQL.
 
-API backend de um gerenciador de tarefas no estilo Pomodoro, construída com **Express**, **Prisma** e **MySQL**.
+🚀 Como rodar
+Pré-requisitos
 
----
+Node.js v18+
+MySQL rodando localmente
 
-## 📁 Estrutura de Pastas
+Instalação
+bash# 1. Instalar dependências
+npm install
 
-```
+# 2. Configurar variáveis de ambiente
+# Edite o arquivo .env com seus dados do MySQL:
+# DATABASE_URL="mysql://root:sua_senha@localhost:3306/chronos_db"
+
+# 3. Criar banco e tabelas
+npx prisma migrate dev --name init
+
+# 4. Iniciar servidor
+npm run dev
+Servidor disponível em: http://localhost:3333
+
+📋 Endpoints
+Health
+MétodoRotaDescriçãoGET/healthVerifica se a API está no ar
+Resposta:
+json{ "ok": true }
+
+Settings
+MétodoRotaDescriçãoGET/settingsRetorna as configurações atuaisPUT/settingsAtualiza as configurações
+GET /settings — Resposta:
+json{
+  "id": 1,
+  "workTime": 25,
+  "shortBreakTime": 5,
+  "longBreakTime": 15
+}
+PUT /settings — Body:
+json{
+  "workTime": 30,
+  "shortBreakTime": 10,
+  "longBreakTime": 20
+}
+
+Tasks
+MétodoRotaDescriçãoGET/tasksLista todas as tasks (ordenadas por data)POST/tasksCria uma nova taskPATCH/tasks/:id/completeMarca task como concluídaPATCH/tasks/:id/interruptMarca task como interrompidaDELETE/tasksRemove todas as tasks
+POST /tasks — Body:
+json{
+  "id": "abc123",
+  "name": "Estudar React",
+  "duration": 25,
+  "type": "workTime",
+  "startDate": "2024-01-15T10:00:00.000Z"
+}
+
+Tipos válidos para type: workTime, shortBreakTime, longBreakTime
+
+PATCH /tasks/:id/complete — Body:
+json{
+  "completeDate": "2024-01-15T10:25:00.000Z"
+}
+PATCH /tasks/:id/interrupt — Body:
+json{
+  "interruptDate": "2024-01-15T10:15:00.000Z"
+}
+DELETE /tasks — Resposta: 204 No Content
+
+❗ Códigos de erro
+CódigoSignificado400Payload inválido (campos faltando ou tipo incorreto)404Task não encontrada500Erro interno do servidor
+
+🗄️ Modelo do banco de dados
+prismamodel Settings {
+  id             Int @id @default(autoincrement())
+  workTime       Int @default(25)
+  shortBreakTime Int @default(5)
+  longBreakTime  Int @default(15)
+}
+
+model Task {
+  id            String    @id
+  name          String
+  duration      Int
+  type          String
+  startDate     DateTime
+  completeDate  DateTime?
+  interruptDate DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+📁 Estrutura do projeto
 chronos-api/
 ├── prisma/
-│   └── schema.prisma       # Modelos do banco de dados
+│   └── schema.prisma
 ├── src/
 │   ├── controllers/
 │   │   ├── healthController.js
 │   │   ├── settingsController.js
 │   │   └── taskController.js
 │   ├── routes/
-│   │   └── index.js        # Todas as rotas da API
-│   ├── prisma.js           # Instância do PrismaClient
-│   └── server.js           # Entrada da aplicação
-├── .env                    # Variáveis de ambiente (NÃO commitar)
-├── .env.example            # Exemplo de variáveis
-├── .gitignore
+│   │   └── index.js
+│   ├── prisma.js
+│   └── server.js
+├── .env
 └── package.json
-```
-
----
-
-## ⚙️ Pré-requisitos
-
-- Node.js instalado (v18 ou superior)
-- MySQL instalado e rodando
-- npm ou yarn
-
----
-
-## 🚀 Como rodar o projeto
-
-### 1. Instalar dependências
-
-```bash
-npm install
-```
-
-### 2. Configurar o banco de dados
-
-Abra o arquivo `.env` e edite a linha `DATABASE_URL` com seus dados do MySQL:
-
-```
-DATABASE_URL="mysql://root:sua_senha@localhost:3306/chronos_db"
-```
-
-> Substitua `root` pelo seu usuário, `sua_senha` pela sua senha e `chronos_db` pelo nome do banco que deseja criar.
-
-### 3. Criar o banco e as tabelas
-
-```bash
-npx prisma migrate dev --name init
-```
-
-> Isso cria o banco `chronos_db` (se não existir) e cria as tabelas automaticamente.
-
-### 4. Gerar o Prisma Client
-
-```bash
-npx prisma generate
-```
-
-> Geralmente já é feito automaticamente no passo anterior, mas rode se houver erros.
-
-### 5. Iniciar o servidor
-
-```bash
-npm run dev
-```
-
-O servidor vai rodar em: **http://localhost:3333**
-
----
-
-## 🔗 Rotas da API
-
-### Health
-| Método | URL       | Descrição         |
-|--------|-----------|-------------------|
-| GET    | /health   | Verifica se a API está rodando |
-
-**Resposta:** `{ "ok": true }`
-
----
-
-### Settings
-| Método | URL        | Descrição                        |
-|--------|------------|----------------------------------|
-| GET    | /settings  | Retorna as configurações atuais  |
-| PUT    | /settings  | Atualiza as configurações        |
-
-**Body do PUT (raw JSON):**
-```json
-{
-  "workTime": 30,
-  "shortBreakTime": 10,
-  "longBreakTime": 20
-}
-```
-
----
-
-### Tasks
-| Método | URL                          | Descrição                    |
-|--------|------------------------------|------------------------------|
-| POST   | /tasks                       | Cria uma nova task           |
-| GET    | /tasks                       | Lista todas as tasks         |
-| DELETE | /tasks                       | Limpa o histórico            |
-| PATCH  | /tasks/:taskId/complete      | Marca task como concluída    |
-| PATCH  | /tasks/:taskId/interrupt     | Marca task como interrompida |
-
-**Body do POST (raw JSON):**
-```json
-{
-  "id": "{{$timestamp}}",
-  "name": "Task via Postman",
-  "duration": 30,
-  "type": "workTime",
-  "startDate": "{{$timestamp}}"
-}
-```
-
-**Body do PATCH /complete:**
-```json
-{
-  "completeDate": "{{$timestamp}}"
-}
-```
-
-**Body do PATCH /interrupt:**
-```json
-{
-  "interruptDate": "{{$timestamp}}"
-}
-```
-
----
-
-## ❗ Erros comuns
-
-| Erro | Causa | Solução |
-|------|-------|---------|
-| ECONNREFUSED | API não está rodando | Execute `npm run dev` |
-| 400 em PUT/PATCH/POST | Payload inválido | Verifique os campos obrigatórios |
-| 404 em PATCH task | taskId não existe | Crie a task antes de tentar atualizar |
-
----
-
-## 🧪 Testando no Postman
-
-1. Crie um **Environment** chamado `Chronos Local`
-2. Adicione as variáveis:
-   - `baseUrl` = `http://localhost:3333`
-   - `taskId` = *(deixar vazio, será preenchido automaticamente)*
-3. Na request **POST /tasks**, adicione o seguinte script na aba **Tests**:
-```javascript
-const json = pm.response.json();
-pm.environment.set("taskId", json.id);
-```
