@@ -1,25 +1,20 @@
 {
   "name": "chronos-api",
   "version": "1.0.0",
-  "main": "app.js",
-  "type": "commonjs",
+  "description": "API Chronos - Pomodoro Task Manager",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js"
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^7.8.0",
-    "express": "^5.2.1"
+    "@prisma/client": "^5.0.0",
+    "express": "^4.18.2"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.7.0",
-    "nodemon": "^3.1.14",
-    "prisma": "^7.8.0",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^6.0.3"
+    "nodemon": "^3.0.0",
+    "prisma": "^5.0.0"
   }
 }
