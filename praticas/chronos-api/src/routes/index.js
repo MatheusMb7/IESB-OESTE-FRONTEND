@@ -1,4 +1,3 @@
-// src/routes/index.js
 const { Router } = require('express');
 
 const { healthCheck } = require('../controllers/healthController');
