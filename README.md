@@ -110,3 +110,5 @@ Após abrir o seu **Pull Request**, o GitHub realizará uma verificação autom�
 |  🟡   | **Pendente** | Os testes automáticos ainda estão sendo executados.                | Aguarde alguns segundos até que o ícone mude para verde ou vermelho.          |
 
 ---
+ login: admin@admin.com
+123456
