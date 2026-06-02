@@ -1,7 +1,2 @@
-// src/controllers/healthController.js
-
-const healthCheck = (req, res) => {
-  return res.json({ ok: true });
-};
-
+const healthCheck = (req, res) => res.json({ ok: true });
 module.exports = { healthCheck };

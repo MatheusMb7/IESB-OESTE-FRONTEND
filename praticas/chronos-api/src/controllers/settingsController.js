@@ -1,20 +1,12 @@
-// src/controllers/settingsController.js
 const prisma = require('../prisma');
 
-// GET /settings
 const getSettings = async (req, res) => {
   try {
-    // Busca o primeiro registro de settings (sempre terá apenas um)
-    let settings = await prisma.settings.findFirst();
+    let settings = await prisma.settings.findUnique({ where: { userId: req.userId } });
 
-    // Se não existir ainda, cria com os valores padrão
     if (!settings) {
       settings = await prisma.settings.create({
-        data: {
-          workTime: 25,
-          shortBreakTime: 5,
-          longBreakTime: 15,
-        },
+        data: { userId: req.userId, workTime: 25, shortBreakTime: 5, longBreakTime: 15 },
       });
     }
 
@@ -25,22 +17,16 @@ const getSettings = async (req, res) => {
   }
 };
 
-// PUT /settings
 const updateSettings = async (req, res) => {
   try {
     const { workTime, shortBreakTime, longBreakTime } = req.body;
 
-    // Validação básica
-    if (workTime === undefined && shortBreakTime === undefined && longBreakTime === undefined) {
-      return res.status(400).json({ error: 'Nenhum campo enviado para atualizar' });
-    }
-
-    // Busca ou cria o registro de settings
-    let settings = await prisma.settings.findFirst();
+    let settings = await prisma.settings.findUnique({ where: { userId: req.userId } });
 
     if (!settings) {
       settings = await prisma.settings.create({
         data: {
+          userId: req.userId,
           workTime: workTime ?? 25,
           shortBreakTime: shortBreakTime ?? 5,
           longBreakTime: longBreakTime ?? 15,
@@ -48,7 +34,7 @@ const updateSettings = async (req, res) => {
       });
     } else {
       settings = await prisma.settings.update({
-        where: { id: settings.id },
+        where: { userId: req.userId },
         data: {
           ...(workTime !== undefined && { workTime }),
           ...(shortBreakTime !== undefined && { shortBreakTime }),

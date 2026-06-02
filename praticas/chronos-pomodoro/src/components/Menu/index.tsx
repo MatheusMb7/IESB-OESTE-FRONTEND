@@ -4,18 +4,22 @@ import {
   MoonIcon,
   SettingsIcon,
   SunIcon,
+  LogOutIcon,
 } from 'lucide-react';
 import styles from './styles.module.css';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { RouterLink } from '../RouterLink';
+import { useAuth } from '../../contexts/AuthContext';
 
 type AvailableThemes = 'dark' | 'light';
 
 export function Menu() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [theme, setTheme] = useState<AvailableThemes>(() => {
-    const storageTheme =
-      (localStorage.getItem('theme') as AvailableThemes) || 'dark';
-    return storageTheme;
+    return (localStorage.getItem('theme') as AvailableThemes) || 'dark';
   });
 
   const nextThemeIcon = {
@@ -23,15 +27,15 @@ export function Menu() {
     light: <MoonIcon />,
   };
 
-  function handleThemeChange(
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-  ) {
-    event.preventDefault();
+  function handleThemeChange(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  }
 
-    setTheme(prevTheme => {
-      const nextTheme = prevTheme === 'dark' ? 'light' : 'dark';
-      return nextTheme;
-    });
+  function handleLogout(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    logout();
+    navigate('/login');
   }
 
   useEffect(() => {
@@ -41,6 +45,12 @@ export function Menu() {
 
   return (
     <nav className={styles.menu}>
+      {user && (
+        <span className={styles.welcome} title={`Logado como ${user.email}`}>
+          Olá, {user.name.split(' ')[0]}!
+        </span>
+      )}
+
       <RouterLink
         className={styles.menuLink}
         href='/'
@@ -76,6 +86,16 @@ export function Menu() {
         onClick={handleThemeChange}
       >
         {nextThemeIcon[theme]}
+      </a>
+
+      <a
+        className={styles.menuLink}
+        href='#'
+        aria-label='Sair'
+        title='Sair'
+        onClick={handleLogout}
+      >
+        <LogOutIcon />
       </a>
     </nav>
   );
