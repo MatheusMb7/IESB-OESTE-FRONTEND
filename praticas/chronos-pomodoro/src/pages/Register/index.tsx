@@ -3,30 +3,35 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './styles.module.css';
 
-export function Login() {
+export function Register() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
       setError('Preencha todos os campos');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Senha deve ter no mínimo 6 caracteres');
       return;
     }
 
     setIsLoading(true);
     try {
-      await login(email, password);
+      await register(name, email, password);
       navigate('/home');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login');
+      setError(err instanceof Error ? err.message : 'Erro ao criar conta');
     } finally {
       setIsLoading(false);
     }
@@ -34,34 +39,39 @@ export function Login() {
 
   return (
     <div className={styles.container}>
-      <form onSubmit={handleLogin} className={styles.form}>
-        <h1>Login</h1>
+      <form onSubmit={handleRegister} className={styles.form}>
+        <h1>Criar conta</h1>
 
         {error && <p className={styles.error}>{error}</p>}
 
         <input
+          type="text"
+          placeholder="Seu nome"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className={styles.input}
+        />
+        <input
           type="email"
-          placeholder="Digite seu email"
+          placeholder="Seu email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.input}
         />
-
         <input
           type="password"
-          placeholder="Digite sua senha"
+          placeholder="Senha (mín. 6 caracteres)"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={styles.input}
         />
 
         <button type="submit" className={styles.button} disabled={isLoading}>
-          {isLoading ? 'Entrando...' : 'Entrar'}
+          {isLoading ? 'Criando conta...' : 'Criar conta'}
         </button>
 
         <div className={styles.links}>
-          <Link to="/forgot-password">Esqueci minha senha</Link>
-          <Link to="/register">Criar conta</Link>
+          <Link to="/login">Já tenho conta</Link>
         </div>
       </form>
     </div>

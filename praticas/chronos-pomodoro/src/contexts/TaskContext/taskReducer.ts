@@ -1,3 +1,6 @@
+// src/contexts/TaskContext/taskReducer.ts
+// SUBSTITUIR o arquivo existente por este
+
 import type { TaskStateModel } from '../../models/TaskStateModel';
 import { formatSecondsToMinutes } from '../../utils/formatSecondsToMinutes';
 import { getNextCycle } from '../../utils/getNextCycle';
@@ -66,8 +69,14 @@ export function taskReducer(
     case TaskActionTypes.CHANGE_SETTINGS: {
       return { ...state, config: { ...action.payload } };
     }
+    case TaskActionTypes.LOAD_TASKS: {
+      // Substitui as tasks do estado pelas vindas da API
+      return {
+        ...state,
+        tasks: action.payload.tasks,
+      };
+    }
   }
 
-  // Sempre deve retornar o estado
   return state;
 }
